@@ -7,21 +7,23 @@ function Detail({ data }) {
     const { id } = useParams()
     const [types, setTypes] = useState(null)
     const [loading, setLoading] = useState(true)
-    const [evo, setEvo] = useState('')
-    const [evo2, setEvo2] = useState('')
+    const [evo, setEvo] = useState(0)
+    const [evo2, setEvo2] = useState(0)
     const [pokemonEvo, setPokemonEvo] = useState(null)
     const [pokemonEvo2, setPokemonEvo2] = useState(null)
     const [pokemonPreEvo, setPokemonPreEvo] = useState(null)
     const [pokemonPreEvo2, setPokemonPreEvo2] = useState(null)
-    const [preevo, setPreevo] = useState('')
-    const [preevo2, setPreevo2] = useState('')
+    const [preevo, setPreevo] = useState(0)
+    const [preevo2, setPreevo2] = useState(0)
     const [pokemon, setPokemon] = useState(null)
 
+    // Récupérer le Pokémon actuel en fonction de l'ID
     useEffect(() => {
         const selectedPokemon = data.find((e) => e.id === parseInt(id))
         setPokemon(selectedPokemon)
     }, [id, data])
 
+    // Charger les types
     useEffect(() => {
         axios.get('https://pokebuildapi.fr/api/v1/types')
             .then(respons => {
@@ -34,33 +36,32 @@ function Detail({ data }) {
             })
     }, [])
 
+    // Mettre à jour les évolutions et pré-évolutions
     useEffect(() => {
         if (pokemon && pokemon.apiEvolutions && pokemon.apiEvolutions.length >= 1) {
-            setEvo(pokemon.apiEvolutions[0].name);
+            setEvo(pokemon.apiEvolutions[0].pokedexId)
         } else {
-            setEvo('');
+            setEvo(0)
         }
 
         if (pokemon && pokemon.apiPreEvolution) {
-            setPreevo(pokemon.apiPreEvolution.name);
+            setPreevo(pokemon.apiPreEvolution.pokedexIdd)
         } else {
-            setPreevo('');
+            setPreevo(0)
         }
 
         if (pokemonEvo && pokemonEvo.apiEvolutions && pokemonEvo.apiEvolutions.length >= 1) {
-            setEvo2(pokemonEvo.apiEvolutions[0].name);
+            setEvo2(pokemonEvo.apiEvolutions[0].pokedexId)
         } else {
-            setEvo2('');
+            setEvo2(0)
         }
 
         if (pokemonPreEvo && pokemonPreEvo.apiPreEvolution) {
-            setPreevo2(pokemonPreEvo.apiPreEvolution.name);
-            console.log(pokemonPreEvo.apiPreEvolution.name);
-            
+            setPreevo2(pokemonPreEvo.apiPreEvolution.pokedexIdd)
         } else {
-            setPreevo2('');
+            setPreevo2(0)
         }
-    }, [pokemon, pokemonEvo, pokemonPreEvo]);
+    }, [pokemon, pokemonEvo, pokemonPreEvo])
 
     useEffect(() => {
         if (evo) {
@@ -88,23 +89,23 @@ function Detail({ data }) {
         if (preevo) {
             axios.get(`https://pokebuildapi.fr/api/v1/pokemon/${preevo}`)
                 .then(respons => {
-                    setPokemonPreEvo(respons.data);
+                    setPokemonPreEvo(respons.data)
                 })
                 .catch(error => {
-                    console.log(error);
-                });
+                    console.log(error)
+                })
         }
 
         if (preevo2) {
             axios.get(`https://pokebuildapi.fr/api/v1/pokemon/${preevo2}`)
                 .then(respons => {
-                    setPokemonPreEvo2(respons.data);
+                    setPokemonPreEvo2(respons.data)
                 })
                 .catch(error => {
-                    console.log(error);
-                });
+                    console.log(error)
+                })
         }
-    }, [preevo, preevo2]);
+    }, [preevo, preevo2])
 
     if (loading) {
         return (
@@ -195,9 +196,6 @@ function Detail({ data }) {
                                 <img src={pokemon.image} alt="" className='w-50' />
                             </div>
                         )}
-
-
-
                         {evo && pokemonEvo ? (
                             <div>
                                 <p>n° {pokemonEvo.id} : {pokemonEvo.name}</p>
